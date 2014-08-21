@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool.Poolable;
 import com.innerlogic.quadtreedemo.entities.SpriteEntity;
 
 /**
@@ -13,7 +14,7 @@ import com.innerlogic.quadtreedemo.entities.SpriteEntity;
  * Date: 10/11/13
  * Time: 4:07 PM
  */
-public class QuadTreeNode<T extends SpriteEntity>
+public class QuadTreeNode<T extends SpriteEntity> implements Poolable
 {
     // Max number to store in this quad before subdividing
     public static final int MAX_ENTITIES = 4;
@@ -309,5 +310,11 @@ public class QuadTreeNode<T extends SpriteEntity>
 			}
 					
 		}
+	}
+
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -18,7 +18,6 @@ public class QuadTree<T extends SpriteEntity> {
 	QuadTreeNode<T> root_node; // Root node.
 	
 	Array<QuadTreeNode<T>> node_buffer; 
-	Rectangle rect;
 	
 	/*int max_level;  // Not used, yet. */
 	
@@ -31,7 +30,6 @@ public class QuadTree<T extends SpriteEntity> {
 		//this.max_level = max_level;		
 		root_node = new QuadTreeNode<T>(0, boundary);
 		node_buffer = new Array<QuadTreeNode<T>>();
-		rect = new Rectangle();
 	}
 	
 	
@@ -57,12 +55,7 @@ public class QuadTree<T extends SpriteEntity> {
 	 public void retrieve(Array<T> entitiesToReturn, T entity){
 		 
 		 QuadTreeNode<T> temp;
-		 
-		 rect.x = entity.getX();
-		 rect.y = entity.getY();
-		 rect.width = entity.getWidth();
-		 rect.height = entity.getHeight();
-		 
+		 		 
 		 node_buffer.add(root_node);
 		 
 		 do{
