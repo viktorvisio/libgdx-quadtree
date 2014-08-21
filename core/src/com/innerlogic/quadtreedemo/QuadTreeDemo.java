@@ -20,8 +20,16 @@ public class QuadTreeDemo extends Game
     public final static String TEXTURE_BLOCK_4 = "textures/block_4x4.png";
     public final static String TEXTURE_BLOCK_2 = "textures/block_2x2.png";
     public final static String TEXTURE_BLOCK_1 = "textures/block_1x1.png";
+    
+    public final static String[] TEXTURE_BLOCKS = {"textures/block_1x1.png",
+    											   "textures/block_2x2.png",
+    											   "textures/block_4x4.png",
+    											   "textures/block_8x8.png",
+    											   "textures/block_16x16.png",
+    											   "textures/block_32x32.png",
+    											   "textures/block_64x64.png"};
 
-    public final static String TEXTURE_BLOCK = TEXTURE_BLOCK_8;
+    public final static String TEXTURE_BLOCK = TEXTURE_BLOCKS[3];
 
     // Our AssetManager! Very important!
     public AssetManager assetManager;

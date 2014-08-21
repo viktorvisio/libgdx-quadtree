@@ -13,7 +13,7 @@ import com.innerlogic.quadtreedemo.entities.SpriteEntity;
  * Date: 10/11/13
  * Time: 4:07 PM
  */
-public class QuadTreeNode
+public class QuadTreeNode<T extends SpriteEntity>
 {
     // Max number to store in this quad before subdividing
     public static final int MAX_ENTITIES = 4;
@@ -23,13 +23,13 @@ public class QuadTreeNode
     private Rectangle boundary;
 
     // All entities in this quad
-    private Array<SpriteEntity> entities;
+    private Array<T> entities;
 
     // The level of this node
     private int level;
 
     // Child QuadTreeNodes
-    private Array<QuadTreeNode> childNodes;
+    private Array<QuadTreeNode<T>> childNodes;
 
     // Scratch variables
     private static Vector2 BOUNDS_CENTER = null;
@@ -39,10 +39,10 @@ public class QuadTreeNode
         this.level = level;
         this.boundary = boundary;
 
-        entities = new Array<SpriteEntity>(true, MAX_ENTITIES);
+        entities = new Array<T>(true, MAX_ENTITIES);
 
         // NW, NE, SE, SW (Clockwise)
-        childNodes = new Array<QuadTreeNode>(true, 4);
+        childNodes = new Array<QuadTreeNode<T>>(true, 4);
 
         if(BOUNDS_CENTER == null)
         {
@@ -59,7 +59,7 @@ public class QuadTreeNode
         entities.clear();
 
         // Clear out each child node
-        for(QuadTreeNode currNode : childNodes)
+        for(QuadTreeNode<T> currNode : childNodes)
         {
             if(currNode != null)
             {
@@ -81,19 +81,21 @@ public class QuadTreeNode
         float height_div2 = boundary.height / 2;
         float x = boundary.x;
         float y = boundary.y;
+        
+        int next_level = level + 1;
 
         // Create four child node which fully divide the boundary of this node
         Rectangle nwRect = new Rectangle(x, y + height_div2, width_div2, height_div2);
-        childNodes.add(new QuadTreeNode(level + 1, nwRect));
+        childNodes.add(new QuadTreeNode<T>(next_level, nwRect));
 
         Rectangle neRect = new Rectangle(x + width_div2, y + height_div2, width_div2, height_div2);
-        childNodes.add(new QuadTreeNode(level + 1, neRect));
+        childNodes.add(new QuadTreeNode<T>(next_level, neRect));
 
         Rectangle seRect = new Rectangle(x + width_div2, y, width_div2, height_div2);
-        childNodes.add(new QuadTreeNode(level + 1, seRect));
+        childNodes.add(new QuadTreeNode<T>(next_level, seRect));
 
         Rectangle swRect = new Rectangle(x, y, width_div2, height_div2);
-        childNodes.add(new QuadTreeNode(level + 1, swRect));
+        childNodes.add(new QuadTreeNode<T>(next_level, swRect));
     }
 
     /**
@@ -146,7 +148,7 @@ public class QuadTreeNode
      * @param entity
      */
 
-    public void insert(SpriteEntity entity)
+    public void insert(T entity)
     {
         // If we have any child nodes, see if the entity could be contained completely inside of one
         // of them
@@ -184,8 +186,8 @@ public class QuadTreeNode
                 int index = getIndex(entities.get(i));
                 if(index != -1)
                 {
-                    SpriteEntity poppedEntity = entities.removeIndex(i);
-                    QuadTreeNode nodeToAddTo = childNodes.get(index);
+                	T poppedEntity = entities.removeIndex(i);
+                    QuadTreeNode<T> nodeToAddTo = childNodes.get(index);
                     nodeToAddTo.insert(poppedEntity);
                 }
                 else
@@ -210,7 +212,7 @@ public class QuadTreeNode
             // If full containment is possible, recurse retrieval in that node.
             if(index != -1)
             {
-                QuadTreeNode nodeToRetrieveFrom = childNodes.get(index);
+                QuadTreeNode<T> nodeToRetrieveFrom = childNodes.get(index);
                 nodeToRetrieveFrom.retrieve(entitiesToReturn, entity);
             }
         }
@@ -229,7 +231,7 @@ public class QuadTreeNode
     public void render(ShapeRenderer shapeRenderer)
     {
         // Attempt to render each child node
-        for(QuadTreeNode currNode : childNodes)
+        for(QuadTreeNode<T> currNode : childNodes)
         {
             currNode.render(shapeRenderer);
         }
@@ -262,4 +264,50 @@ public class QuadTreeNode
         // Render the rect
         shapeRenderer.rect(boundary.x, boundary.y, boundary.width, boundary.height);
     }
+    
+    /**
+     * Part of non-recursive retrieve.
+     * This is where logic from master branch differs.
+     * In here we are adding ALL nodes intersecting with our rectangle. 
+     * As a result we will get higher number of retrieved objects but no possible collisions are omitted.
+     * @param nodes
+     * @param entitiesToRetrieve
+     * @param rect
+     */
+	public void retrieve(Array<QuadTreeNode<T>> nodes, Array<T> entitiesToRetrieve, Rectangle rect){
+		
+		
+		//  This will return every entity with overlaping boundary. Saves buffer space.
+		/*
+		int size = entities.size;
+		for(int n = 0; n < size; n++){
+			if(rect.overlaps(entities.get(n).getBoundingRectangle())){
+				entitiesToRetrieve.add(entities.get(n));
+			}
+		}
+		*/
+		
+		entitiesToRetrieve.addAll(entities); // Due to logic in GameScreen, I'll go with the same solution.
+		
+		// TODO Find better way to check for overlaps.
+		if(childNodes.size != 0){
+			
+			if(childNodes.get(0).boundary.overlaps(rect)){
+				nodes.add(childNodes.get(0));
+			}
+			
+			if(childNodes.get(1).boundary.overlaps(rect)){
+				nodes.add(childNodes.get(1));
+			}
+			
+			if(childNodes.get(2).boundary.overlaps(rect)){
+				nodes.add(childNodes.get(2));
+			}
+			
+			if(childNodes.get(3).boundary.overlaps(rect)){
+				nodes.add(childNodes.get(3));
+			}
+					
+		}
+	}
 }

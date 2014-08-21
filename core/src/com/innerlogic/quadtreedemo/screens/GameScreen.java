@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.innerlogic.quadtreedemo.QuadTreeDemo;
+import com.innerlogic.quadtreedemo.collision.QuadTree;
 import com.innerlogic.quadtreedemo.collision.QuadTreeNode;
 import com.innerlogic.quadtreedemo.entities.SpriteEntity;
 import com.innerlogic.quadtreedemo.logging.LoggingAction;
@@ -55,7 +56,7 @@ public class GameScreen extends ScreenAdapter
     // -----------------------------------
     // Quadtree related
     // -----------------------------------
-    private QuadTreeNode quadTree;
+    private QuadTree<SpriteEntity> quadTree;
     private Array<SpriteEntity> entitiesToCheck;
 
     public GameScreen(final QuadTreeDemo game)
@@ -116,14 +117,15 @@ public class GameScreen extends ScreenAdapter
         });
 
         // Set up the quad tree
-        quadTree = new QuadTreeNode(0, new Rectangle(0, 0, screenWidth, screenWidth));
+        quadTree = new QuadTree<SpriteEntity>(0, new Rectangle(0, 0, screenWidth, screenWidth));
         entitiesToCheck = new Array<SpriteEntity>(true, QuadTreeNode.MAX_ENTITIES);
     }
 
     // TODO Probably can be added elsewhere
     private SpriteEntity generateValidBlock()
     {
-        SpriteEntity block = new SpriteEntity(_game.assetManager.get(QuadTreeDemo.TEXTURE_BLOCK, Texture.class));
+    	
+        SpriteEntity block = new SpriteEntity(_game.assetManager.get(QuadTreeDemo.TEXTURE_BLOCKS[MathUtils.random(6)], Texture.class));
         block.setPosition(MathUtils.random(0, screenWidth - block.getWidth()), MathUtils.random(0, screenHeight - block.getHeight()));
         block.setVelocity(MathUtils.random(-1.0f, 1.0f), MathUtils.random(-1.0f, 1.0f));
         block.setSpeed(MathUtils.random(20, 200));
@@ -249,19 +251,21 @@ public class GameScreen extends ScreenAdapter
             // Check the blocks
             for(SpriteEntity blockToTest : entitiesToCheck)
             {
+            	
                 // SPECIAL CASE: No need to check against our self
                 if(currBlock == blockToTest)
                 {
                     continue;
                 }
-
+                
+         
                 // If the blocks are colliding (Overlapping), tint them as red
                 if(currBlock.getBoundingRectangle().overlaps(blockToTest.getBoundingRectangle()))
                 {
                     currBlock.setColor(Color.RED);
                     blockToTest.setColor(Color.RED);
                 }
-
+				
                 // Increment the number of collision checks
                 numCollisionChecksThisFrame++;
             }

@@ -26,7 +26,10 @@ public class LoadingScreen extends ScreenAdapter
         _game = game;
 
         // Tell the asset manager what needs to be loaded
-        _game.assetManager.load(QuadTreeDemo.TEXTURE_BLOCK, Texture.class);
+        
+        for(int n = 0; n < QuadTreeDemo.TEXTURE_BLOCKS.length; n++){
+        	_game.assetManager.load(QuadTreeDemo.TEXTURE_BLOCKS[n], Texture.class);
+        }
     }
 
     @Override
